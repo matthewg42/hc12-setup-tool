@@ -35,12 +35,21 @@ String getInput(String promptStr="> ") {
                 Serial.println(F("serial error"));
                 return "";
             }
-            Serial.print((char)c);
-            if (c == '\r' || c == '\n') {
-                Serial.println();
-                return String(buf);
+            if (c == 127 && i>0) {
+                // handle backspace
+                i--;
+                buf[i] = 0;
+                Serial.print('\b');
+                Serial.print(' ');
+                Serial.print('\b');
+            } else {
+                if (c != '\b') { Serial.print((char)c); }
+                if (c == '\r' || c == '\n') {
+                    Serial.println();
+                    return String(buf);
+                }
+                buf[i++] = (char)c;
             }
-            buf[i++] = (char)c;
         }
     }
     Serial.println();
