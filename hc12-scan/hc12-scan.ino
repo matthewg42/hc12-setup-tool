@@ -26,6 +26,9 @@ void changeChannel()
     delay(SET_MODE_DELAY);
     String cmd = "AT+C";
     channel = (channel+1) % 128;
+    if (channel == 0) {
+        Serial.println("Channel 0");
+    }
     cmd += channel;
     DB("TX: ");
     DB(cmd);
@@ -133,7 +136,7 @@ void dumpSerial()
                 Serial.print(c);
             }
             if (!channelPrinted) {
-                Serial.print("CH");
+                Serial.print("\nCH");
                 Serial.print(channel);
                 Serial.print(": ");
                 channelPrinted = true;
