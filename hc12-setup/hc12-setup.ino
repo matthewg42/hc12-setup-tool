@@ -94,12 +94,36 @@ void menuBaud()
     setHc12Baud(BAUDRATES[i]);
 }
 
+void dumpSerial()
+{
+    hc12.setModeOff();
+    hc12.flush();
+
+    while (true) {
+        if (Serial.available() > 0) {
+            break;
+        }
+
+        if (hc12.available() > 0 ) {
+            int c = hc12.read();
+            if (c < 0) {
+                Serial.print("hc12 serial returned: ");
+                Serial.print(c);
+            }
+            Serial.print((char)c);
+        }
+    }
+    hc12.setModeOff();
+}
+
 void sendATCommand()
 {
     if (help) {
         Serial.println(F("AT          return OK to show comms working [default command]"));
         Serial.println();
         Serial.println(F("AT+Rx       query settings; x: C=channel F=mode P=power X=all"));
+        Serial.println();
+        Serial.println(F("AT+Bxxxx    set baud rate for device to xxxx, e.g. AT+B9600"));
         Serial.println();
         Serial.println(F("AT+Cxxx     set channel; 001 to 127"));
         Serial.println(F("            note: if channel > 100 you may have range issues"));
@@ -117,6 +141,7 @@ void sendATCommand()
         Serial.println(F("AT+SLEEP    go to sleep"));
         Serial.println();
         Serial.println(F("c           apply changes now"));
+        Serial.println(F("d           dump serial (press return to quit from there)"));
         Serial.println(F("h           re-display help message"));
         help = false;
     }
@@ -124,6 +149,9 @@ void sendATCommand()
     String cmd = getInput("command (h for help) > ");
     if (cmd == "") {
         cmd = "AT";
+    } else if (cmd[0] == 'd') {
+        dumpSerial();
+        return;
     } else if (cmd[0] == 'h') {
         help = true;
         return;
