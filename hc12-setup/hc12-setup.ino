@@ -99,17 +99,38 @@ void dumpSerial()
 {
     hc12.setModeOff();
     hc12.flush();
+    bool rxLast = false;
+
+    Serial.println(F("CTRL-C to abort"));
 
     while (true) {
         if (Serial.available() > 0) {
-            break;
+            int c = Serial.read();
+            if (c < 0 || c == 3) {
+                break;
+            } else {
+                if (rxLast) {
+                    rxLast = false;
+                    Serial.print("\nTX: ");
+                }
+                Serial.print((char)c);
+                hc12.write((char)c);
+                if (c == '\r') {
+                    Serial.print('\n');
+                    hc12.write('\n');
+                }
+            }
         }
 
         if (hc12.available() > 0 ) {
             int c = hc12.read();
             if (c < 0) {
-                Serial.print("hc12 serial returned: ");
+                Serial.print(F("HC12 serial returned: "));
                 Serial.print(c);
+            }
+            if (!rxLast) {
+                rxLast = true;
+                Serial.print("\nRX: ");
             }
             Serial.print((char)c);
         }
