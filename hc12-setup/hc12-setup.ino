@@ -3,6 +3,7 @@
 #include <Mode.h>
 #include <SoftwareSerial.h>
 #include <string.h>
+#include <stdint.h>
 #include "HC12Serial.h"
 #include "Config.h"
 
@@ -10,7 +11,7 @@
 
 bool help = false;
 
-const int BAUDRATES[] = {1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200};
+const long BAUDRATES[] = {1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200};
 
 HC12Serial hc12(HC12_RX, HC12_TX, HC12_SET);
 
