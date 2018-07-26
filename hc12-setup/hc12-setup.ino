@@ -114,10 +114,11 @@ void dumpSerial()
                     Serial.print("\nTX: ");
                 }
                 Serial.print((char)c);
-                hc12.write((char)c);
+                hc12.print((char)c);
+                // CR means LF as well...
                 if (c == '\r') {
                     Serial.print('\n');
-                    hc12.write('\n');
+                    hc12.print('\n');
                 }
             }
         }
@@ -132,7 +133,21 @@ void dumpSerial()
                 rxLast = true;
                 Serial.print("\nRX: ");
             }
-            Serial.print((char)c);
+            if ((c >= ' ' && c <= '~') || c == '\n' || c == '\r') {
+                // Printable characters
+                Serial.print((char)c);
+                // CR means LF as well...
+                if (c == '\r') {
+                    Serial.print('\n');
+                    hc12.print('\n');
+                }
+            } else {
+                // Non-printing characters
+                Serial.print(F("[0x")); hc12.print(F("[0x"));
+                if (c < 0x10) { Serial.print('0'); hc12.print('0'); }
+                Serial.print(c, HEX);   hc12.print(c, HEX);
+                Serial.print(']');      hc12.print(']');
+            }
         }
     }
     hc12.setModeOff();
